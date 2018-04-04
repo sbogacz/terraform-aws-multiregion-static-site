@@ -45,3 +45,8 @@ variable "replication_aws_region" {
   description = "the AWS region to deploy the replicated S3 resources to"
   default     = ""
 }
+
+variable "failover" {
+  default     = false
+  description = "a boolean indicating whether you want to change the CloudFront origin to point to the replication bucket. If set to true, replication_aws_region MUST BE SET"
+}

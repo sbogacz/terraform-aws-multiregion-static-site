@@ -15,3 +15,13 @@ module "s3" {
   enable_replication     = "${var.enable_replication}"
   replication_aws_region = "${var.replication_aws_region}"
 }
+
+module "cloudfront" {
+  source = "./modules/cloudfront"
+
+  tags     = "${var.tags}"
+  failover = "${var.failover}"
+
+  website_bucket_domain_name     = "${module.s3.bucket_domain_name}"
+  replication_bucket_domain_name = "${module.s3.replication_bucket_domain_name}"
+}
