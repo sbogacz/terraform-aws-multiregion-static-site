@@ -55,7 +55,7 @@ resource "aws_s3_bucket" "website_replication" {
   count    = "${var.enable_replication ? 1 : 0}"
   provider = "aws.replication"
   bucket   = "${var.bucket_name}-replication"
-  acl      = "public-read"
+  acl      = "private"
 
   region = "${var.replication_aws_region}"
 
