@@ -1,3 +1,6 @@
+/****************************************
+ * General (AWS) Stuff
+************** **************************/
 variable "aws_region" {
   type        = "string"
   description = "the AWS region to deploy the S3 resources to"
@@ -11,12 +14,18 @@ variable "bucket_name" {
   description = "name for the bucket that will host your website"
 }
 
+/****************************************
+ * General (non-AWS) Stuff
+ ****************************************/
 variable "tags" {
   type        = "map"
   description = "optional tags to attach to the created s3 resources"
   default     = {}
 }
 
+/****************************************
+ * S3 Website Configuration Variables
+ ****************************************/
 variable "index_page" {
   type        = "string"
   description = "path to the desired index page"
@@ -39,6 +48,19 @@ variable "replication_aws_region" {
   type        = "string"
   description = "the AWS region to deploy the replicated S3 resources to. If not empty, cross-region S3 replication will be enabled"
   default     = ""
+}
+
+/****************************************
+ * CloudFront Configuration Variables
+ ****************************************/
+variable "http_method_configuration" {
+  default     = "all"
+  description = "determine which HTTP methods will be allowed on the CloudFront distribution. Options are all (GET,PUT,POST,DELETE,ETC.), read (GET, HEAD), and read-and-options(GET,HEAD,OPTIONS). Defaults to all, but most static website cases will want to use read or read-and-options."
+}
+
+variable "cached_http_method_configuration" {
+  default     = "read-and-options"
+  description = "determine which HTTP methods will be cached on the CloudFront distribution. Options are all (GET,PUT,POST,DELETE,ETC.), read (GET, HEAD), and read-and-options(GET,HEAD,OPTIONS). Defaults to read-and-options"
 }
 
 variable "failover" {

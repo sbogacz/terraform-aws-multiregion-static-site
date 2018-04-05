@@ -16,6 +16,22 @@ module "s3" {
   replication_aws_region = "${var.replication_aws_region}"
 }
 
+variable locals {
+  read-and-options = ["GET", "HEAD", "OPTIONS"]
+  read             = ["GET", "HEAD"]
+  all              = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+
+  # HTTP methods
+  http_methods = ["${local.all}"]
+  http_methods = ["${var.http_method_configuration == "read" ? local.read : local.http_methods}"]
+  http_methods = ["${var.http_method_configuration == "read-and-options" ? local.read-and-options : local.http_methods}"]
+
+  # cached HTTP methods
+  cached_http_methods = ["${local.all}"]
+  cached_http_methods = ["${var.cached_http_method_configuration == "read" ? local.read : local.http_methods}"]
+  cached_http_methods = ["${var.cached_http_method_configuration == "read-and-options" ? local.read-and-options : local.http_methods}"]
+}
+
 module "cloudfront" {
   source = "./modules/cloudfront"
 
@@ -24,4 +40,7 @@ module "cloudfront" {
 
   website_bucket_domain_name     = "${module.s3.bucket_domain_name}"
   replication_bucket_domain_name = "${module.s3.replication_bucket_domain_name}"
+
+  http_methods        = ["${local.http_methods}"]
+  cached_http_methods = ["${local.cached_http_methods}"]
 }

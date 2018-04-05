@@ -3,8 +3,17 @@ resource "aws_cloudfront_origin_access_identity" "website_origin_access_identity
 }
 
 locals {
-  replication_domain_name = "${var.replication_bucket_domain_name == "" ? var.website_bucket_domain_name : var.replication_bucket_domain_name}"
-  domain_name             = "${var.failover ? local.replication_domain_name : var.website_bucket_domain_name}"
+  replication_domain_name         = "${var.replication_bucket_domain_name == "" ? var.website_bucket_domain_name : var.replication_bucket_domain_name}"
+  domain_name                     = "${var.failover ? local.replication_domain_name : var.website_bucket_domain_name}"
+  replication_logging_domain_name = "${var.replication_logging_bucket_domain_name == "" ? var.website_logging_bucket_domain_name : var.replication_logging_bucket_domain_name}"
+  logging_domain_name             = "${var.failover ? local.replication_logging_domain_name : var.website_logging_domain_name}"
+}
+
+resource "aws_iam_server_certificate" "custom_cert" {
+  count            = "${var.cert_file == "" ? 0 : 1}"
+  name             = "${var.website} cert"
+  certificate_body = "${file(var.cert_file)}"
+  private_key      = "${file(var.private_key_file)}"
 }
 
 resource "aws_cloudfront_distribution" "website-distribution" {
@@ -24,11 +33,11 @@ resource "aws_cloudfront_distribution" "website-distribution" {
   enabled             = true
   is_ipv6_enabled     = true
   comment             = "${var.website} assets"
-  default_root_object = "index.html"
+  default_root_object = "${var.index_page}"
 
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    allowed_methods  = ["${var.http_methods}"]
+    cached_methods   = ["${var.cached_http_methods}"]
     target_origin_id = "s3-${var.website}-assets"
     compress         = true
 
@@ -40,10 +49,15 @@ resource "aws_cloudfront_distribution" "website-distribution" {
       query_string = false
     }
 
-    viewer_protocol_policy = "allow-all"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 86400
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = "${var.min_ttl}"
+    default_ttl            = "${var.default_ttl}"
+    max_ttl                = "${var.max_ttl}"
+  }
+
+  logging {
+    bucket = "${local.logging_domain_name}"
+    prefix = "${var.website}-cf"
   }
 
   restrictions {
@@ -53,6 +67,8 @@ resource "aws_cloudfront_distribution" "website-distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = true
+    cloudfront_default_certificate = "${var.cert_file == "" && var.acm_certificate_arn}"
+    acm_certificate_arn            = "${var.acm_certificate_arn}"
+    iam_certificate_id             = "${aws_iam_server_certificate.custom_cert.id}"
   }
 }
