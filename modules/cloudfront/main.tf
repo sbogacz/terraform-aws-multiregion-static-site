@@ -3,7 +3,8 @@ resource "aws_cloudfront_origin_access_identity" "website_origin_access_identity
 }
 
 locals {
-  domain_name = "${var.failover ? var.replication_bucket_domain_name : var.website_bucket_domain_name}"
+  replication_domain_name = "${var.replication_bucket_domain_name == "" ? var.website_bucket_domain_name : var.replication_bucket_domain_name}"
+  domain_name             = "${var.failover ? local.replication_domain_name : var.website_bucket_domain_name}"
 }
 
 resource "aws_cloudfront_distribution" "website-distribution" {

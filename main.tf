@@ -12,7 +12,7 @@ module "s3" {
   logs_prefix = "${var.logs_prefix}"
 
   # Replication
-  enable_replication     = "${var.enable_replication}"
+  enable_replication     = "${var.replication_aws_region != ""}"
   replication_aws_region = "${var.replication_aws_region}"
 }
 
