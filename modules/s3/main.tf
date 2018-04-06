@@ -11,7 +11,7 @@ resource "aws_s3_bucket" "website_logging" {
 # Simple website bucket
 resource "aws_s3_bucket" "website" {
   # if not replication, create
-  count  = "${var.enable_replication ? 0 : 1}"
+  count  = "${var.replication_enabled ? 0 : 1}"
   bucket = "${var.bucket_name}"
   acl    = "private"
 
@@ -39,7 +39,7 @@ provider "aws" {
 
 # Replication destination
 resource "aws_s3_bucket" "website_replication_logging" {
-  count = "${var.enable_replication ? 1 : 0}"
+  count = "${var.replication_enabled ? 1 : 0}"
 
   provider = "aws.replication"
   bucket   = "${var.bucket_name}-replication-logs"
@@ -52,7 +52,7 @@ resource "aws_s3_bucket" "website_replication_logging" {
 
 # Replication destination
 resource "aws_s3_bucket" "website_replication" {
-  count    = "${var.enable_replication ? 1 : 0}"
+  count    = "${var.replication_enabled ? 1 : 0}"
   provider = "aws.replication"
   bucket   = "${var.bucket_name}-replication"
   acl      = "private"
@@ -80,7 +80,7 @@ resource "aws_s3_bucket" "website_replication" {
 
 # This is the IAM roles and policies required for cross-region replication
 resource "aws_iam_role" "replication" {
-  count = "${var.enable_replication ? 1 : 0}"
+  count = "${var.replication_enabled ? 1 : 0}"
   name  = "${var.bucket_name}_replication_role"
 
   assume_role_policy = <<POLICY
@@ -101,7 +101,7 @@ POLICY
 }
 
 resource "aws_iam_policy" "replication" {
-  count = "${var.enable_replication ? 1 : 0}"
+  count = "${var.replication_enabled ? 1 : 0}"
   name  = "${var.bucket_name}_replication_policy"
 
   policy = <<POLICY
@@ -142,7 +142,7 @@ POLICY
 }
 
 resource "aws_iam_policy_attachment" "replication" {
-  count      = "${var.enable_replication ? 1 : 0}"
+  count      = "${var.replication_enabled ? 1 : 0}"
   name       = "${var.bucket_name}_replication_role_policy_attachment"
   roles      = ["${aws_iam_role.replication.name}"]
   policy_arn = "${aws_iam_policy.replication.arn}"
@@ -151,7 +151,7 @@ resource "aws_iam_policy_attachment" "replication" {
 # Cross-region replicated website bucket
 resource "aws_s3_bucket" "replicated_website" {
   # if not replication, create
-  count = "${var.enable_replication ? 1 : 0}"
+  count = "${var.replication_enabled ? 1 : 0}"
 
   #  depends_on = ["aws_iam_role.replication", "aws_iam_policy.replication", "aws_iam_policy_attachment.replication", "aws_s3_bucket.website_replication"]
   bucket = "${var.bucket_name}"

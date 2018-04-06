@@ -37,6 +37,11 @@ variable "aliases" {
 /********************************************************
  * S3 bucket configuration stuff
  *******************************************************/
+variable "replication_enabled" {
+  default     = false
+  description = "a boolean to indicate if cross-region replication is desired. NOTE: This will make the replication region variable required!"
+}
+
 variable "website_bucket_domain_name" {
   type        = "string"
   description = "the bucket domain name corresponding to the S3 bucket holding the assets"

@@ -12,7 +12,7 @@ module "s3" {
   logs_prefix = "${var.logs_prefix}"
 
   # Replication
-  enable_replication     = "${var.replication_aws_region != ""}"
+  replication_enabled    = "${var.replication_aws_region != ""}"
   replication_aws_region = "${var.replication_aws_region}"
 }
 
@@ -20,6 +20,12 @@ locals {
   read-and-options = ["GET", "HEAD", "OPTIONS"]
   read             = ["GET", "HEAD"]
   all              = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+
+  # hackery to allow list conditional
+  http_methods        = ["${split(",", var.http_method_configuration == "read" ? join(",", local.read) : join(",", local.all))}"]
+  cached_http_methods = ["${split(",", var.cached_http_method_configuration == "read" ? join(",", local.read) : join(",", local.all))}"]
+
+  #cached_http_methods = ["${var.cached_http_method_configuration == "read" ? local.read : local.all}"]
 }
 
 module "cloudfront" {
@@ -29,18 +35,15 @@ module "cloudfront" {
   tags     = "${var.tags}"
   failover = "${var.failover}"
 
+  replication_enabled                    = "${var.replication_aws_region != ""}"
   website_bucket_domain_name             = "${module.s3.bucket_domain_name}"
   replication_bucket_domain_name         = "${module.s3.replication_bucket_domain_name}"
   logging_bucket_domain_name             = "${module.s3.logging_bucket_domain_name}"
   replication_logging_bucket_domain_name = "${module.s3.replication_logging_bucket_domain_name}"
 
   # HTTP methods
-  http_methods = ["${local.all}"]
-  http_methods = ["${var.http_method_configuration == "read" ? local.read : local.http_methods}"]
-  http_methods = ["${var.http_method_configuration == "read-and-options" ? local.read-and-options : local.http_methods}"]
+  http_methods = ["${split(",", var.http_method_configuration == "read-and-options" ? join(",", local.read-and-options) : join(",", local.http_methods))}"]
 
   # cached HTTP methods
-  cached_http_methods = ["${local.all}"]
-  cached_http_methods = ["${var.cached_http_method_configuration == "read" ? local.read : local.http_methods}"]
-  cached_http_methods = ["${var.cached_http_method_configuration == "read-and-options" ? local.read-and-options : local.http_methods}"]
+  cached_http_methods = ["${split(",", var.cached_http_method_configuration == "read-and-options" ? join(",", local.read-and-options) : join(",", local.cached_http_methods))}"]
 }

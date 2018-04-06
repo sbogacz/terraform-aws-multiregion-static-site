@@ -35,7 +35,7 @@ variable "logs_prefix" {
   default     = "logs/"
 }
 
-variable "enable_replication" {
+variable "replication_enabled" {
   default     = false
   description = "a boolean to indicate if cross-region replication is desired. NOTE: This will make the replication region variable required!"
 }
