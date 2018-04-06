@@ -23,6 +23,17 @@ variable "index_page" {
   default     = "index.html"
 }
 
+variable "price_class" {
+  description = "the desired price class to use. PriceClass_All, PriceClass_200, and PriceClass_100 are also acceptable"
+  default     = "PriceClass_All"
+}
+
+variable "aliases" {
+  type        = "list"
+  description = "if your cert is for a different (non-CloudFront domain) specify the domain names and their aliases (e.g. mywebsite.com, www.mywebsite.com)"
+  default     = []
+}
+
 /********************************************************
  * S3 bucket configuration stuff
  *******************************************************/
@@ -94,7 +105,7 @@ variable "cert_file" {
   default     = ""
 }
 
-variable "private_key_filei" {
+variable "private_key_file" {
   description = "if you want to use a custom cert, then you'll have to provide the private key file here, and the CA cert file above"
   default     = ""
 }
