@@ -103,22 +103,11 @@ variable "max_ttl" {
 /********************************************************
  * CERT STUFF * IMPORTANT !!! *
  ********************************************************
- * If you don't provide either an Amazon Certificate 
- * Manager ARN, or CA cert and secret key files, then 
+ * If you don't provide Amazon Certificate Manager ARN, 
  * the CloudFront distribution will use the default 
- * CloudFront cert.
+ * CloudFront cert. 
  ********************************************************/
 variable "acm_certificate_arn" {
   description = "if you obtained an SSL cert from AWS Route 53 for your website, then set this field to the ARN of that cert"
-  default     = ""
-}
-
-variable "cert_file" {
-  description = "if you want to use a custom cert, then you'll have to provide the CA cert file here, and the private key file below"
-  default     = ""
-}
-
-variable "private_key_filei" {
-  description = "if you want to use a custom cert, then you'll have to provide the private key file here, and the CA cert file above"
   default     = ""
 }

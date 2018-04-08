@@ -16,6 +16,11 @@ That being said, it does have some robust (albeit opinionated) features
 * Support for resource tagging (on the resources that can be tagged)
 * Ability to fail over to replication bucket by setting the `failover` module flag to true, and re-`terraform apply`-ing (CloudFront does not support automatic failovers as of this writing (04/06/2018)
 
+## Opinionated Omissions 
+
+* This module doesn't try to do any of the DNS configuration for you, simply because there is so much variation in required entries based on having a mail provider (if so, which one), where you registered your domain, etc. The module does provide the cloudfront ARN as an output, so you could use it to configure your own route 53 module
+* This also assumes that you're passing in the Amazon Certificate Manage ARN for your cert (if not, it will use the default CloudFront cert, which will enable HTTPS only for the CloudFront URL. An earlier version did take in the public and private keys to create the resource for you and configure it, but we're choosing to separate the cert process out so as not to have the `tfstate` file hold any secrets.
+
 ## Example Usage: Simple
 ```hcl
 module "tests3" {

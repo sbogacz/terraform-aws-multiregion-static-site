@@ -9,18 +9,6 @@ locals {
   logging_domain_name             = "${var.failover ? local.replication_logging_domain_name : var.logging_bucket_domain_name}"
 }
 
-resource "aws_iam_server_certificate" "custom_cert" {
-  count            = "${var.cert_file == "" ? 0 : 1}"
-  name             = "${var.website} cert"
-  certificate_body = "${file(var.cert_file)}"
-  private_key      = "${file(var.private_key_file)}"
-}
-
-locals {
-  custom_cert_ids = ["${coalescelist(aws_iam_server_certificate.custom_cert.*.id, list(""))}"]
-  custom_cert_id  = "${local.custom_cert_ids[0]}"
-}
-
 resource "aws_cloudfront_distribution" "website-distribution" {
   depends_on = ["aws_cloudfront_origin_access_identity.website_origin_access_identity"]
 
@@ -72,8 +60,7 @@ resource "aws_cloudfront_distribution" "website-distribution" {
   }
 
   viewer_certificate {
-    cloudfront_default_certificate = "${var.cert_file == "" && var.acm_certificate_arn == ""}"
+    cloudfront_default_certificate = "${var.acm_certificate_arn == ""}"
     acm_certificate_arn            = "${var.acm_certificate_arn}"
-    iam_certificate_id             = "${local.custom_cert_id}"
   }
 }
