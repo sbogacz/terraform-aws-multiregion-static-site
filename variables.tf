@@ -5,7 +5,6 @@ variable "aws_region" {
   type        = "string"
   description = "the AWS region to deploy the S3 resources to"
 
-  # some of these configurations may not work outside of dumpster-fire 1
   default = "us-east-1"
 }
 
@@ -39,10 +38,15 @@ variable "logs_prefix" {
   default     = "logs/"
 }
 
+variable "enable_replication" {
+  default     = false
+  description = "a flag to enable cross-region replication. If set to true, then replication_aws_region should also be set, or it will default to us-west-2"
+}
+
 variable "replication_aws_region" {
   type        = "string"
   description = "the AWS region to deploy the replicated S3 resources to. If not empty, cross-region S3 replication will be enabled"
-  default     = ""
+  default     = "us-west-2"
 }
 
 /****************************************

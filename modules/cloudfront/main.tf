@@ -7,12 +7,15 @@ locals {
   domain_name                     = "${var.failover ? local.replication_domain_name : var.website_bucket_domain_name}"
   replication_logging_domain_name = "${var.replication_logging_bucket_domain_name == "" ? var.logging_bucket_domain_name : var.replication_logging_bucket_domain_name}"
   logging_domain_name             = "${var.failover ? local.replication_logging_domain_name : var.logging_bucket_domain_name}"
+  www_alias                       = "www.${var.website}"
 }
 
 resource "aws_cloudfront_distribution" "website-distribution" {
   depends_on = ["aws_cloudfront_origin_access_identity.website_origin_access_identity"]
 
   tags = "${var.tags}"
+
+  aliases = "${coalescelist(list(local.www_alias),var.aliases)}"
 
   origin {
     domain_name = "${local.domain_name}"
@@ -62,5 +65,6 @@ resource "aws_cloudfront_distribution" "website-distribution" {
   viewer_certificate {
     cloudfront_default_certificate = "${var.acm_certificate_arn == ""}"
     acm_certificate_arn            = "${var.acm_certificate_arn}"
+    ssl_support_method             = "sni-only"
   }
 }

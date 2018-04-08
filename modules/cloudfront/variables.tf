@@ -12,6 +12,11 @@ variable "tags" {
   default     = {}
 }
 
+variable "aliases" {
+  default     = [""]
+  description = "any additional CNAME aliases you wish to make. A www. prepended alias will be created for you"
+}
+
 variable "http_methods" {
   default     = ["GET", "HEAD", "OPTIONS"]
   description = "the HTTP methods to allow on the CloudFront distribution"
@@ -26,12 +31,6 @@ variable "index_page" {
 variable "price_class" {
   description = "the desired price class to use. PriceClass_All, PriceClass_200, and PriceClass_100 are also acceptable"
   default     = "PriceClass_All"
-}
-
-variable "aliases" {
-  type        = "list"
-  description = "if your cert is for a different (non-CloudFront domain) specify the domain names and their aliases (e.g. mywebsite.com, www.mywebsite.com)"
-  default     = []
 }
 
 /********************************************************

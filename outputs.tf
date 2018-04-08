@@ -1,3 +1,15 @@
+# S3 
+output "bucket_domain_name" {
+  description = "the domain name of the primary bucket"
+  value       = "${module.s3.bucket_domain_name}"
+}
+
+output "replication_bucket_domain_name" {
+  description = "the domain name of the replicated bucket, will be empty string if replication not enabled"
+  value       = "${module.s3.replication_bucket_domain_name}"
+}
+
+# CloudFront
 output "cloudfront_distribution_arn" {
   description = "the ARN of the created CloudFront distribution"
   value       = "${module.cloudfront.cf_distribution_arn}"
