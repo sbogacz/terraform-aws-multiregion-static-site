@@ -5,13 +5,8 @@ variable "aws_region" {
   type        = "string"
   description = "the AWS region to deploy the S3 resources to"
 
-  # at least it's not dumpster-fire-1
-  default = "us-east-2"
-}
-
-variable "bucket_name" {
-  type        = "string"
-  description = "name for the bucket that will host your website"
+  # some of these configurations may not work outside of dumpster-fire 1
+  default = "us-east-1"
 }
 
 /****************************************
