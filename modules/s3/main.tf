@@ -23,6 +23,17 @@ resource "aws_s3_bucket" "website" {
   website {
     index_document = "${var.index_page}"
     error_document = "${var.error_page}"
+
+    routing_rules = <<EOF
+[{
+    "Condition": {
+        "KeyPrefixEquals": "/"
+    },
+    "Redirect": {
+        "ReplaceKeyPrefixWith": "index.html"
+    }
+}]
+EOF
   }
 
   # logging is a good idea
@@ -65,6 +76,17 @@ resource "aws_s3_bucket" "website_replication" {
   website {
     index_document = "${var.index_page}"
     error_document = "${var.error_page}"
+
+    routing_rules = <<EOF
+[{
+    "Condition": {
+        "KeyPrefixEquals": "/"
+    },
+    "Redirect": {
+        "ReplaceKeyPrefixWith": "index.html"
+    }
+}]
+EOF
   }
 
   # logging is a good idea
@@ -165,6 +187,17 @@ resource "aws_s3_bucket" "replicated_website" {
   website {
     index_document = "${var.index_page}"
     error_document = "${var.error_page}"
+
+    routing_rules = <<EOF
+[{
+    "Condition": {
+        "KeyPrefixEquals": "/"
+    },
+    "Redirect": {
+        "ReplaceKeyPrefixWith": "index.html"
+    }
+}]
+EOF
   }
 
   # logging is a good idea

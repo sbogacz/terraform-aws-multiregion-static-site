@@ -7,7 +7,7 @@ locals {
   domain_name                     = "${var.failover ? local.replication_domain_name : var.website_bucket_domain_name}"
   replication_logging_domain_name = "${var.replication_logging_bucket_domain_name == "" ? var.logging_bucket_domain_name : var.replication_logging_bucket_domain_name}"
   logging_domain_name             = "${var.failover ? local.replication_logging_domain_name : var.logging_bucket_domain_name}"
-  www_alias                       = "www.${var.domain}"
+  www_alias                       = ["${var.domain}", "www.${var.domain}"]
 }
 
 resource "aws_cloudfront_distribution" "website-distribution" {
@@ -15,7 +15,7 @@ resource "aws_cloudfront_distribution" "website-distribution" {
 
   tags = "${var.tags}"
 
-  aliases = "${coalescelist(list(local.www_alias),var.aliases)}"
+  aliases = ["${coalescelist(local.www_alias,var.aliases)}"]
 
   origin {
     domain_name = "${local.domain_name}"
