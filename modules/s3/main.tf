@@ -15,6 +15,7 @@ resource "aws_s3_bucket" "website" {
   # if not replication, create
   count  = "${var.replication_enabled ? 0 : 1}"
   bucket = "${var.bucket_name}"
+  policy = "${data.aws_iam_policy_document.website_content.json}"
   acl    = "private"
 
   region = "${var.aws_region}"
@@ -33,7 +34,7 @@ resource "aws_s3_bucket" "website" {
         "KeyPrefixEquals": "/"
     },
     "Redirect": {
-        "ReplaceKeyPrefixWith": "index.html"
+        "ReplaceKeyWith": "index.html"
     }
 }]
 EOF
@@ -71,6 +72,7 @@ resource "aws_s3_bucket" "website_replication" {
   count    = "${var.replication_enabled ? 1 : 0}"
   provider = "aws.replication"
   bucket   = "${var.bucket_name}-replication"
+  policy   = "${data.aws_iam_policy_document.website_content.json}"
   acl      = "private"
 
   region = "${var.replication_aws_region}"
@@ -90,7 +92,7 @@ resource "aws_s3_bucket" "website_replication" {
         "KeyPrefixEquals": "/"
     },
     "Redirect": {
-        "ReplaceKeyPrefixWith": "index.html"
+        "ReplaceKeyWith": "index.html"
     }
 }]
 EOF
@@ -184,6 +186,7 @@ resource "aws_s3_bucket" "replicated_website" {
 
   #  depends_on = ["aws_iam_role.replication", "aws_iam_policy.replication", "aws_iam_policy_attachment.replication", "aws_s3_bucket.website_replication"]
   bucket = "${var.bucket_name}"
+  policy = "${data.aws_iam_policy_document.website_content.json}"
   acl    = "private"
 
   region = "${var.aws_region}"
@@ -203,7 +206,7 @@ resource "aws_s3_bucket" "replicated_website" {
         "KeyPrefixEquals": "/"
     },
     "Redirect": {
-        "ReplaceKeyPrefixWith": "index.html"
+        "ReplaceKeyWith": "index.html"
     }
 }]
 EOF
@@ -241,13 +244,19 @@ resource "aws_cloudfront_origin_access_identity" "website_oai" {
   comment = "Origin Access Identity for ${var.bucket_name}"
 }
 
+locals {
+  bucket_arn_string             = "arn:aws:s3:::${var.bucket_name}"
+  replication_bucket_arn_string = "arn:aws:s3:::${var.bucket_name}-replication"
+  bucket_resource_arns          = ["${compact(list(local.bucket_arn_string, var.replication_enabled ? local.replication_bucket_arn_string : ""))}"]
+}
+
 data "aws_iam_policy_document" "website_content" {
   statement {
-    sid    = "AllowCloudFronttRead"
+    sid    = "AllowCloudFrontRead"
     effect = "Allow"
 
     actions   = ["s3:GetObject"]
-    resources = ["${local.bucket_arn}/*", "${local.replicated_bucket_arns[0]}/*"]
+    resources = ["${formatlist("%s/*", local.bucket_resource_arns)}"]
 
     principals {
       type        = "AWS"
@@ -260,7 +269,7 @@ data "aws_iam_policy_document" "website_content" {
     effect = "Allow"
 
     actions   = ["s3:ListBucket"]
-    resources = ["${local.bucket_arn}", "${local.replicated_bucket_arns[0]}"]
+    resources = ["${local.bucket_resource_arns}"]
 
     principals {
       type        = "AWS"

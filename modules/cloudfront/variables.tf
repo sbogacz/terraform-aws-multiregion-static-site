@@ -28,6 +28,12 @@ variable "index_page" {
   default     = "index.html"
 }
 
+variable "error_page" {
+  type        = "string"
+  description = "path to the desired error page"
+  default     = "/404.html"
+}
+
 variable "price_class" {
   description = "the desired price class to use. PriceClass_All, PriceClass_200, and PriceClass_100 are also acceptable"
   default     = "PriceClass_All"

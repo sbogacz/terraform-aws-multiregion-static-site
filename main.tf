@@ -54,4 +54,7 @@ module "cloudfront" {
 
   # cert
   acm_certificate_arn = "${var.acm_certificate_arn}"
+
+  # custom error page
+  error_page = "/${var.error_page}"
 }

@@ -61,4 +61,16 @@ resource "aws_cloudfront_distribution" "website-distribution" {
     acm_certificate_arn            = "${var.acm_certificate_arn}"
     ssl_support_method             = "sni-only"
   }
+
+  custom_error_response {
+    error_code         = 404
+    response_code      = 404
+    response_page_path = "${var.error_page}"
+  }
+
+  custom_error_response {
+    error_code         = 403
+    response_code      = 404
+    response_page_path = "${var.error_page}"
+  }
 }
