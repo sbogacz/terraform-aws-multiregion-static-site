@@ -68,6 +68,11 @@ variable "failover" {
   description = "a boolean indicating whether you want to change the CloudFront origin to point to the replication bucket. If set to true, replication_bucket_domain_name MUST BE SET"
 }
 
+variable "access_identity_path" {
+  type        = "string"
+  description = "the CloudFront Origin Access Identity Path that will be needed for the distribution"
+}
+
 /********************************************************
  * Cache behavior
  *******************************************************/

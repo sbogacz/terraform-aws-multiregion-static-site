@@ -44,3 +44,8 @@ variable "replication_aws_region" {
   type        = "string"
   description = "the AWS region to deploy the replicated S3 resources to"
 }
+
+variable "force_destroy" {
+  default     = false
+  description = "a passthrough variable to the created s3 buckets to allow the terraform destroy to succeed in the event that objects are present. Be warned, these objects will NOT be recoverable"
+}

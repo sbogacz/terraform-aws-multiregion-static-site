@@ -1,7 +1,3 @@
-resource "aws_cloudfront_origin_access_identity" "website_origin_access_identity" {
-  comment = "${var.domain} access identity"
-}
-
 locals {
   replication_domain_name         = "${var.replication_bucket_domain_name == "" ? var.website_bucket_domain_name : var.replication_bucket_domain_name}"
   domain_name                     = "${var.failover ? local.replication_domain_name : var.website_bucket_domain_name}"
@@ -11,8 +7,6 @@ locals {
 }
 
 resource "aws_cloudfront_distribution" "website-distribution" {
-  depends_on = ["aws_cloudfront_origin_access_identity.website_origin_access_identity"]
-
   tags = "${var.tags}"
 
   aliases = ["${coalescelist(local.www_alias,var.aliases)}"]
@@ -22,7 +16,7 @@ resource "aws_cloudfront_distribution" "website-distribution" {
     origin_id   = "s3-${var.domain}-assets"
 
     s3_origin_config {
-      origin_access_identity = "${aws_cloudfront_origin_access_identity.website_origin_access_identity.cloudfront_access_identity_path}"
+      origin_access_identity = "${var.access_identity_path}"
     }
   }
 

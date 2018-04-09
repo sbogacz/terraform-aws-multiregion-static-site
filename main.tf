@@ -14,6 +14,9 @@ module "s3" {
   # Replication
   replication_enabled    = "${var.enable_replication}"
   replication_aws_region = "${var.replication_aws_region}"
+
+  # Force destroy
+  force_destroy = "${var.force_destroy}"
 }
 
 locals {
@@ -33,6 +36,7 @@ module "cloudfront" {
   tags = "${var.tags}"
 
   # S3 configuration
+  access_identity_path                   = "${module.s3.cloudfront_access_identity_path}"
   replication_enabled                    = "${var.replication_aws_region != ""}"
   website_bucket_domain_name             = "${module.s3.bucket_domain_name}"
   replication_bucket_domain_name         = "${module.s3.replication_bucket_domain_name}"

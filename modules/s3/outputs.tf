@@ -41,3 +41,8 @@ output "replication_bucket_arn" {
   description = "the ARN of the replicated bucket"
   value       = "${local.replicated_bucket_arns[0]}"
 }
+
+output "cloudfront_access_identity_path" {
+  description = "the CloudFront Origin Access Identity Path that will be needed for the distribution"
+  value       = "${aws_cloudfront_origin_access_identity.website_oai.cloudfront_access_identity_path}"
+}

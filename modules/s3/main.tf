@@ -6,6 +6,8 @@ resource "aws_s3_bucket" "website_logging" {
   region = "${var.aws_region}"
 
   tags = "${var.tags}"
+
+  force_destroy = "${var.force_destroy}"
 }
 
 # Simple website bucket
@@ -17,7 +19,8 @@ resource "aws_s3_bucket" "website" {
 
   region = "${var.aws_region}"
 
-  tags = "${var.tags}"
+  tags          = "${var.tags}"
+  force_destroy = "${var.force_destroy}"
 
   # website configuration
   website {
@@ -59,6 +62,8 @@ resource "aws_s3_bucket" "website_replication_logging" {
   region = "${var.replication_aws_region}"
 
   tags = "${var.tags}"
+
+  force_destroy = "${var.force_destroy}"
 }
 
 # Replication destination
@@ -71,6 +76,8 @@ resource "aws_s3_bucket" "website_replication" {
   region = "${var.replication_aws_region}"
 
   tags = "${var.tags}"
+
+  force_destroy = "${var.force_destroy}"
 
   # website configuration
   website {
@@ -183,6 +190,8 @@ resource "aws_s3_bucket" "replicated_website" {
 
   tags = "${var.tags}"
 
+  force_destroy = "${var.force_destroy}"
+
   # website configuration
   website {
     index_document = "${var.index_page}"
@@ -221,6 +230,41 @@ EOF
 
       prefix = ""
       status = "Enabled"
+    }
+  }
+}
+
+/*****************************************
+ * Permissions for CloudFront
+ *****************************************/
+resource "aws_cloudfront_origin_access_identity" "website_oai" {
+  comment = "Origin Access Identity for ${var.bucket_name}"
+}
+
+data "aws_iam_policy_document" "website_content" {
+  statement {
+    sid    = "AllowCloudFronttRead"
+    effect = "Allow"
+
+    actions   = ["s3:GetObject"]
+    resources = ["${local.bucket_arn}/*", "${local.replicated_bucket_arns[0]}/*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["${aws_cloudfront_origin_access_identity.website_oai.iam_arn}"]
+    }
+  }
+
+  statement {
+    sid    = "AllowCloudFrontBucketList"
+    effect = "Allow"
+
+    actions   = ["s3:ListBucket"]
+    resources = ["${local.bucket_arn}", "${local.replicated_bucket_arns[0]}"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["${aws_cloudfront_origin_access_identity.website_oai.iam_arn}"]
     }
   }
 }
