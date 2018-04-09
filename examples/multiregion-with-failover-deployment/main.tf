@@ -15,7 +15,7 @@ module "my-website" {
   http_method_configuration        = "read-and-options"
   cached_http_method_configuration = "read-and-options"
 
-  acm_certificate_arn = "arn:aws:acm:us-east-1:<acount-id>:certificate/<certificate-id>"
+  acm_certificate_arn = "arn:aws:acm:us-east-1:<account-id>:certificate/<certificate-id>"
 
   # enable cross region replication
   enable_replication     = true
