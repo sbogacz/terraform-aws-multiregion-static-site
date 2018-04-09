@@ -1,9 +1,9 @@
 /********************************************************
  * Website specific configuration
  *******************************************************/
-variable "website" {
+variable "domain" {
   type        = "string"
-  description = "name of the website you're creating CloudFront assets for"
+  description = "name of the domain you're creating CloudFront assets for"
 }
 
 variable "tags" {

@@ -2,7 +2,7 @@ module "s3" {
   source = "./modules/s3"
 
   aws_region  = "${var.aws_region}"
-  bucket_name = "${var.website}-bucket"
+  bucket_name = "${var.domain}-bucket"
 
   tags       = "${var.tags}"
   index_page = "${var.index_page}"
@@ -27,8 +27,8 @@ locals {
 }
 
 module "cloudfront" {
-  source  = "./modules/cloudfront"
-  website = "${var.website}"
+  source = "./modules/cloudfront"
+  domain = "${var.domain}"
 
   tags = "${var.tags}"
 

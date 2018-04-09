@@ -1,5 +1,5 @@
 resource "aws_cloudfront_origin_access_identity" "website_origin_access_identity" {
-  comment = "${var.website} access identity"
+  comment = "${var.domain} access identity"
 }
 
 locals {
@@ -7,7 +7,7 @@ locals {
   domain_name                     = "${var.failover ? local.replication_domain_name : var.website_bucket_domain_name}"
   replication_logging_domain_name = "${var.replication_logging_bucket_domain_name == "" ? var.logging_bucket_domain_name : var.replication_logging_bucket_domain_name}"
   logging_domain_name             = "${var.failover ? local.replication_logging_domain_name : var.logging_bucket_domain_name}"
-  www_alias                       = "www.${var.website}"
+  www_alias                       = "www.${var.domain}"
 }
 
 resource "aws_cloudfront_distribution" "website-distribution" {
@@ -19,7 +19,7 @@ resource "aws_cloudfront_distribution" "website-distribution" {
 
   origin {
     domain_name = "${local.domain_name}"
-    origin_id   = "s3-${var.website}-assets"
+    origin_id   = "s3-${var.domain}-assets"
 
     s3_origin_config {
       origin_access_identity = "${aws_cloudfront_origin_access_identity.website_origin_access_identity.cloudfront_access_identity_path}"
@@ -28,13 +28,13 @@ resource "aws_cloudfront_distribution" "website-distribution" {
 
   enabled             = true
   is_ipv6_enabled     = true
-  comment             = "${var.website} assets"
+  comment             = "${var.domain} assets"
   default_root_object = "${var.index_page}"
 
   default_cache_behavior {
     allowed_methods  = ["${var.http_methods}"]
     cached_methods   = ["${var.cached_http_methods}"]
-    target_origin_id = "s3-${var.website}-assets"
+    target_origin_id = "s3-${var.domain}-assets"
     compress         = true
 
     forwarded_values {
@@ -53,7 +53,7 @@ resource "aws_cloudfront_distribution" "website-distribution" {
 
   logging_config {
     bucket = "${local.logging_domain_name}"
-    prefix = "${var.website}-cf"
+    prefix = "${var.domain}-cf"
   }
 
   restrictions {
