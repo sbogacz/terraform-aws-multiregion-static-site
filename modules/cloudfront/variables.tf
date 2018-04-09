@@ -47,7 +47,7 @@ variable "replication_enabled" {
   description = "a boolean to indicate if cross-region replication is desired. NOTE: This will make the replication region variable required!"
 }
 
-variable "website_bucket_domain_name" {
+variable "bucket_website_endpoint" {
   type        = "string"
   description = "the bucket domain name corresponding to the S3 bucket holding the assets"
 }
@@ -57,7 +57,7 @@ variable "logging_bucket_domain_name" {
   description = "the logging bucket domain name corresponding to the S3 bucket holding the logs for the website asset bucket"
 }
 
-variable "replication_bucket_domain_name" {
+variable "replication_bucket_website_endpoint" {
   type        = "string"
   description = "[OPTIONAL IF NOT IN FAILOVER] the replication bucket domain name corresponding to the S3 bucket holding the assets"
   default     = ""

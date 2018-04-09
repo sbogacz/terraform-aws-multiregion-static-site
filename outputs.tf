@@ -1,12 +1,12 @@
 # S3 
-output "bucket_domain_name" {
+output "bucket_website_endpoint" {
   description = "the domain name of the primary bucket"
-  value       = "${module.s3.bucket_domain_name}"
+  value       = "${module.s3.bucket_website_endpoint}"
 }
 
-output "replication_bucket_domain_name" {
+output "replication_bucket_website_endpoint" {
   description = "the domain name of the replicated bucket, will be empty string if replication not enabled"
-  value       = "${module.s3.replication_bucket_domain_name}"
+  value       = "${module.s3.replication_bucket_website_endpoint}"
 }
 
 output "bucket_arn" {

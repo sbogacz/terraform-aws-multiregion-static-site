@@ -1,6 +1,6 @@
 locals {
-  replication_domain_name         = "${var.replication_bucket_domain_name == "" ? var.website_bucket_domain_name : var.replication_bucket_domain_name}"
-  domain_name                     = "${var.failover ? local.replication_domain_name : var.website_bucket_domain_name}"
+  replication_endpoint            = "${var.replication_bucket_website_endpoint == "" ? var.bucket_website_endpoint : var.replication_bucket_website_endpoint}"
+  website_endpoint                = "${var.failover ? local.replication_endpoint : var.bucket_website_endpoint}"
   replication_logging_domain_name = "${var.replication_logging_bucket_domain_name == "" ? var.logging_bucket_domain_name : var.replication_logging_bucket_domain_name}"
   logging_domain_name             = "${var.failover ? local.replication_logging_domain_name : var.logging_bucket_domain_name}"
   www_alias                       = ["${var.domain}", "www.${var.domain}"]
@@ -12,7 +12,7 @@ resource "aws_cloudfront_distribution" "website-distribution" {
   aliases = ["${coalescelist(local.www_alias,var.aliases)}"]
 
   origin {
-    domain_name = "${local.domain_name}"
+    domain_name = "${local.website_endpoint}"
     origin_id   = "s3-${var.domain}-assets"
 
     s3_origin_config {

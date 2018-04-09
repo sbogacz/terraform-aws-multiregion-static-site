@@ -1,8 +1,8 @@
 locals {
-  replicated_domain                      = ["${coalescelist(aws_s3_bucket.replicated_website.*.bucket_domain_name, list(""))}"]
-  non_replicated_domain                  = ["${coalescelist(aws_s3_bucket.website.*.bucket_domain_name, list(""))}"]
-  bucket_domain_name                     = "${var.replication_enabled ? local.replicated_domain[0] : local.non_replicated_domain[0]}"
-  replication_bucket_domain_name         = ["${coalescelist(aws_s3_bucket.website_replication.*.bucket_domain_name, list(""))}"]
+  replicated_website_endpoint            = ["${coalescelist(aws_s3_bucket.replicated_website.*.website_endpoint, list(""))}"]
+  non_replicated_website_endpoint        = ["${coalescelist(aws_s3_bucket.website.*.website_endpoint, list(""))}"]
+  bucket_website_endpoint                = "${var.replication_enabled ? local.replicated_website_endpoint[0] : local.non_replicated_website_endpoint[0]}"
+  replication_bucket_website_endpoint    = ["${coalescelist(aws_s3_bucket.website_replication.*.website_endpoint, list(""))}"]
   replication_logging_bucket_domain_name = ["${coalescelist(aws_s3_bucket.website_replication_logging.*.bucket_domain_name, list(""))}"]
 
   # Compute ARN
@@ -12,9 +12,9 @@ locals {
   replicated_bucket_arns = ["${coalescelist(aws_s3_bucket.website_replication.*.arn, list(""))}"]
 }
 
-output "bucket_domain_name" {
-  description = "the domain name of the primary bucket"
-  value       = "${local.bucket_domain_name}"
+output "bucket_website_endpoint" {
+  description = "the website_endpoint name of the primary bucket"
+  value       = "${local.bucket_website_endpoint}"
 }
 
 output "logging_bucket_domain_name" {
@@ -22,9 +22,9 @@ output "logging_bucket_domain_name" {
   value       = "${aws_s3_bucket.website_logging.bucket_domain_name}"
 }
 
-output "replication_bucket_domain_name" {
-  description = "the domain name of the replicated bucket, will be empty string if replication not enabled"
-  value       = "${local.replication_bucket_domain_name[0]}"
+output "replication_bucket_website_endpoint" {
+  description = "the website_endpoint name of the replicated bucket, will be empty string if replication not enabled"
+  value       = "${local.replication_bucket_website_endpoint[0]}"
 }
 
 output "replication_logging_bucket_domain_name" {

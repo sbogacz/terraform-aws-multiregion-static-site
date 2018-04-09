@@ -38,8 +38,8 @@ module "cloudfront" {
   # S3 configuration
   access_identity_path                   = "${module.s3.cloudfront_access_identity_path}"
   replication_enabled                    = "${var.replication_aws_region != ""}"
-  website_bucket_domain_name             = "${module.s3.bucket_domain_name}"
-  replication_bucket_domain_name         = "${module.s3.replication_bucket_domain_name}"
+  bucket_website_endpoint                = "${module.s3.bucket_website_endpoint}"
+  replication_bucket_website_endpoint    = "${module.s3.replication_bucket_website_endpoint}"
   logging_bucket_domain_name             = "${module.s3.logging_bucket_domain_name}"
   replication_logging_bucket_domain_name = "${module.s3.replication_logging_bucket_domain_name}"
 

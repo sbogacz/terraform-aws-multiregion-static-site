@@ -15,6 +15,7 @@ resource "aws_s3_bucket" "website" {
   # if not replication, create
   count  = "${var.replication_enabled ? 0 : 1}"
   bucket = "${var.bucket_name}"
+
   policy = "${data.aws_iam_policy_document.website_content.json}"
   acl    = "private"
 
@@ -28,7 +29,7 @@ resource "aws_s3_bucket" "website" {
     index_document = "${var.index_page}"
     error_document = "${var.error_page}"
 
-    routing_rules = <<EOF
+    /*    routing_rules = <<EOF
 [{
     "Condition": {
         "KeyPrefixEquals": "/"
@@ -37,7 +38,7 @@ resource "aws_s3_bucket" "website" {
         "ReplaceKeyWith": "index.html"
     }
 }]
-EOF
+EOF*/
   }
 
   # logging is a good idea
@@ -86,7 +87,7 @@ resource "aws_s3_bucket" "website_replication" {
     index_document = "${var.index_page}"
     error_document = "${var.error_page}"
 
-    routing_rules = <<EOF
+    /*    routing_rules = <<EOF
 [{
     "Condition": {
         "KeyPrefixEquals": "/"
@@ -95,7 +96,7 @@ resource "aws_s3_bucket" "website_replication" {
         "ReplaceKeyWith": "index.html"
     }
 }]
-EOF
+EOF*/
   }
 
   # logging is a good idea
