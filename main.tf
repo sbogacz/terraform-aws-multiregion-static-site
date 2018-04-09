@@ -36,7 +36,6 @@ module "cloudfront" {
   tags = "${var.tags}"
 
   # S3 configuration
-  access_identity_path                   = "${module.s3.cloudfront_access_identity_path}"
   replication_enabled                    = "${var.replication_aws_region != ""}"
   bucket_website_endpoint                = "${module.s3.bucket_website_endpoint}"
   replication_bucket_website_endpoint    = "${module.s3.replication_bucket_website_endpoint}"
