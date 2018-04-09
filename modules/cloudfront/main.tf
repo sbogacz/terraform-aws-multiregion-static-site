@@ -15,9 +15,17 @@ resource "aws_cloudfront_distribution" "website-distribution" {
     domain_name = "${local.website_endpoint}"
     origin_id   = "s3-${var.domain}-assets"
 
-    s3_origin_config {
-      origin_access_identity = "${var.access_identity_path}"
+    custom_origin_config {
+      http_port                = "80"
+      https_port               = "443"
+      origin_keepalive_timeout = 5
+      origin_protocol_policy   = "match-viewer"
+      origin_ssl_protocols     = ["TLSv1", "TLSv1.1", "TLSv1.2"]
     }
+
+    #s3_origin_config {
+    #  origin_access_identity = "${var.access_identity_path}"
+    #}
   }
 
   enabled             = true
